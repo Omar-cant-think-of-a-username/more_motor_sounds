@@ -19,10 +19,21 @@ jobs:
       - name: Grant execute permissions for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew assembleDebug
+        run: ./gradlew build
 
-      - name: Upload debug apk
-        uses: actions/upload-artifact@v3
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'  # Only release on main branch
         with:
-          name: apk-debug
-          path: app/build/outputs/apk/debug/*.apk
+          files: |
+            **/*.apk
+          name: "S24USpoofer LSPosed App"
+          tag_name: "s24uspoofer-${{ github.run_number }}"
+          body: |
+            Automated build of S24USpoofer LSPosed App
+            Build number: ${{ github.run_number }}
+            Commit: ${{ github.sha }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
