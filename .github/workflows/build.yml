@@ -7,6 +7,11 @@ jobs:
   pre_build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # Required to create releases and upload assets
+      packages: write  # Required if you're working with packages
+      actions: read    # Required to read workflow details
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
