@@ -39,7 +39,7 @@ public class MainHook implements IXposedHookLoadPackage {
                  @Override
                  protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                      // Modify behavior before the original method is called
-                     Log.d("CameraSoundHook", "updateFpIconColor() hooked and bypassed!");
+                     Log.d("Colored_FP", "updateFpIconColor() hooked and bypassed!");
        
     }
 }
