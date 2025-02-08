@@ -42,7 +42,7 @@ public class MainHook implements IXposedHookLoadPackage {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 // Do nothing when the method is called
-               // Log.d("Colored_FP", "updateFpIconColor() hooked and bypassed!");
+                Log.d("Colored_FP", "updateFpIconColor() hooked and bypassed!");
                 return ;
             }
         });
