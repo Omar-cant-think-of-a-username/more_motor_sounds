@@ -15,35 +15,39 @@
 
 package com.mrx7014.s24ultraspoofer;
 
-import android.os.Build;
 import android.util.Log;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodReplacement;
 
 public class MainHook implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        XposedBridge.log("Colored_FP: Hooking into: " + lpparam.packageName);
+        // Check if the target package is being loaded
         if (!lpparam.packageName.equals("com.android.systemui")) {
             return;
         }
+
+        // Log that we're hooking into the target package
+        XposedBridge.log("Colored_FP: Hooking into: " + lpparam.packageName);
 
         // Target class and method
         String targetClass = "com.coloros.systemui.keyguard.onscreenfingerprint.OnScreenFingerprintOpticalAnimCtrl";
         String targetMethod = "updateFpIconColor";
 
-        // Hook the method
-        XposedHelpers.findAndHookMethod(targetClass, lpparam.classLoader, targetMethod, new XC_MethodHook() {
+        // Hook the method and replace its implementation with an empty body
+        XposedHelpers.findAndHookMethod(targetClass, lpparam.classLoader, targetMethod, new XC_MethodReplacement() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                // Do nothing when the method is called
-                Log.d("Colored_FP", "updateFpIconColor() hooked and bypassed!");
-                return ;
+            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                // Log that the method has been hooked
+                Log.d("Colored_FP", "updateFpIconColor() hooked and emptied!");
+
+                // Return null or any default value (if the method has a return type)
+                return null;
             }
         });
     }
