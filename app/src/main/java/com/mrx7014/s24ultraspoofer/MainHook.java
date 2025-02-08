@@ -39,9 +39,9 @@ public class MainHook implements IXposedHookLoadPackage {
         String targetMethod = "updateFpIconColor";
 
         // Hook the method
-        XposedHelpers.findAndHookMethod(targetClass, lpparam.classLoader, targetMethod, new XC_MethodReplacement() {
+        XposedHelpers.findAndHookMethod(targetClass, lpparam.classLoader, targetMethod, new XC_MethodHook() {
             @Override
-            protected Object replaceHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 // Do nothing when the method is called
                 Log.d("Colored_FP", "updateFpIconColor() hooked and bypassed!");
                 return null;
