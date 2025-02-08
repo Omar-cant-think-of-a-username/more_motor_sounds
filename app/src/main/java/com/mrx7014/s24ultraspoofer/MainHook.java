@@ -16,33 +16,36 @@
 package com.mrx7014.s24ultraspoofer;
 
 import android.os.Build;
+import android.util.Log;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
+import de.robv.android.xposed.XC_MethodReplacement;
+import de.robv.android.xposed.callbacks.XC_MethodHook;
 
 public class MainHook implements IXposedHookLoadPackage {
 
     @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {        
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         XposedBridge.log("Colored_FP: Hooking into: " + lpparam.packageName);
-         if (!lpparam.packageName.equals("com.android.systemui")) {
-                 return;}
-         
-            // Target class and method
-             String targetClass = "com.coloros.systemui.keyguard.onscreenfingerprint.OnScreenFingerprintOpticalAnimCtrl";
-             String targetMethod = "updateFpIconColor";
+        if (!lpparam.packageName.equals("com.android.systemui")) {
+            return;
+        }
 
-             // Hook the method
-             XposedHelpers.findAndHookMethod(targetClass, lpparam.classLoader, targetMethod, new XC_MethodReplacement() {
-                 @Override
-                 protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                       // Do nothing when the method is called
-                       return null;
-                     Log.d("Colored_FP", "updateFpIconColor() hooked and bypassed!");
-                     
-      }
-      }
-      }                                       
-      }                                       
+        // Target class and method
+        String targetClass = "com.coloros.systemui.keyguard.onscreenfingerprint.OnScreenFingerprintOpticalAnimCtrl";
+        String targetMethod = "updateFpIconColor";
+
+        // Hook the method
+        XposedHelpers.findAndHookMethod(targetClass, lpparam.classLoader, targetMethod, new XC_MethodReplacement() {
+            @Override
+            protected Object replaceHookedMethod(XC_MethodHook.MethodHookParam param) throws Throwable {
+                // Do nothing when the method is called
+                Log.d("Colored_FP", "updateFpIconColor() hooked and bypassed!");
+                return null;
+            }
+        });
+    }
+}
