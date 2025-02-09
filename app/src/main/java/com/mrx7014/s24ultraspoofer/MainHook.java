@@ -28,7 +28,7 @@ public class MainHook implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         // Check if the target package is being loaded
-        if (!lpparam.packageName.equals("com.android.systemui")) {
+        if (!lpparam.packageName.equals("com.android.settings")) {
             return;
         }
 
@@ -36,18 +36,27 @@ public class MainHook implements IXposedHookLoadPackage {
         XposedBridge.log("Colored_FP: Hooking into: " + lpparam.packageName);
 
         // Target class and method
-        String targetClass = "com.coloros.systemui.keyguard.onscreenfingerprint.OnScreenFingerprintOpticalAnimCtrl";
-        String targetMethod = "updateFpIconColor";
+        String targetClass = "com.coloros.settings.feature.othersettings.cameraeffect.CameraSoundPrefCategoryController";
+        String targetMethod = "loadSoundEffects";
+        
 
         // Hook the method and replace its implementation with an empty body
         XposedHelpers.findAndHookMethod(targetClass, lpparam.classLoader, targetMethod, new XC_MethodReplacement() {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                // Log that the method has been hooked
-                Log.d("Colored_FP", "updateFpIconColor() hooked and emptied!");
-
-                // Return null or any default value (if the method has a return type)
-                return null;
+                 addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_technology), RES_PATH_TECHNOLOGY_UP, RES_PATH_TECHNOLOGY_DOWN);
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_mechanism), RES_PATH_MECHANISM_UP, RES_PATH_MECHANISM_DOWN);
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_pure_music), RES_PATH_PURE_MUSIC_UP, RES_PATH_PURE_MUSIC_DOWN);
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_chilun), "/system_ext/media/audio/ui/popup_chilun_up.mp3", "/system_ext/media/audio/ui/popup_chilun_down.mp3");
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_jijia), "/system_ext/media/audio/ui/popup_jijia_up.mp3", "/system_ext/media/audio/ui/popup_jijia_down.mp3");
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_cangmen), "/system_ext/media/audio/ui/popup_cangmen_up.mp3", "/system_ext/media/audio/ui/popup_cangmen_down.mp3");
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_ironman), "/system_ext/media/audio/ui/popup_ironman_up.mp3", "/system_ext/media/audio/ui/popup_ironman_down.mp3");
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_lightsaber), "/system_ext/media/audio/ui/popup_LighSaber_up.ogg", "/system_ext/media/audio/ui/popup_LighSaber_down.ogg");
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_mario), "/system_ext/media/audio/ui/popup_mario_up.ogg", "/system_ext/media/audio/ui/popup_mario_down.ogg");
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_mofa), "/system_ext/media/audio/ui/popup_mofa_up.mp3", "/system_ext/media/audio/ui/popup_mofa_down.mp3");
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_muqin), "/system_ext/media/audio/ui/popup_muqin_up.mp3", "/system_ext/media/audio/ui/popup_muqin_down.mp3");
+        addSoundPathAndLoad(this.mContext.getString(R.string.camera_3d_sound_yingyan), "/system_ext/media/audio/ui/popup_yingyan_up.mp3", "/system_ext/media/audio/ui/popup_yingyan_down.mp3");
+       
             }
         });
     }
