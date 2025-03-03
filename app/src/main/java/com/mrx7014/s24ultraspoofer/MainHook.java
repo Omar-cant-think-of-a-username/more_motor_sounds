@@ -28,7 +28,7 @@ public class MainHook implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         // Check if the target package is being loaded
-        if (!lpparam.packageName.equals("com.android.incallui")) {
+        if (!lpparam.packageName.equals("com.android.systemui")) {
             return;
         }
 
@@ -36,8 +36,8 @@ public class MainHook implements IXposedHookLoadPackage {
         XposedBridge.log("Blur Background: Hooking into: " + lpparam.packageName);
 
         // Target class and method
-        String targetClass = "com.android.incallui.OppoInCallActivity";
-        String targetMethod = "showBackground";
+        String targetClass = "com.coloros.systemui.navbar.gesture.sidegesture.ColorSideGestureNavView";
+        String targetMethod = "onDraw";
         
 
         // Hook the method and replace its implementation with an empty body
@@ -45,45 +45,16 @@ public class MainHook implements IXposedHookLoadPackage {
             @Override
             protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
                 
-        if (Log.sDebug) {
-            Log.d(LOG_TAG, "isAniamtion = " + z);
+        if (this.mGestureState == 2 || this.mBackIconProcessing) {
+            canvas.drawBitmap(this.mBackIcon, this.mBackIconMatrix, this.mIconPaint);
         }
-        UiModeManager uiModeManager = this.mUiModeManager;
-        if (uiModeManager != null && uiModeManager.getNightMode() == 3) {
-            if (Log.sDebug) {
-                Log.d(LOG_TAG, "NightMode is true");
-            }
-            this.mBackground.setBackgroundColor(getResources().getColor(R.color.incall_white_color));
-        } else {
-            this.mUseGaussianBlurBackground = false;
-            try {
-                WeakReference weakReference = new WeakReference(OppoGaussianBlurUtils.getInstance().getBackgroundBitmap());
-                if (weakReference.get() != null && !((Bitmap) weakReference.get()).isRecycled()) {
-                    if (Log.sDebug) {
-                        Log.d(LOG_TAG, "wallPaper = " + weakReference.get());
-                    }
-                    this.mBackground.setBackground(new BitmapDrawable((Bitmap) weakReference.get()));
-                    if (OppoGaussianBlurUtils.getInstance().isBackgrounBitMapUsed()) {
-                        this.mUseGaussianBlurBackground = true;
-                    }
-                }
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "exception = " + e);
-            }
-            if (!this.mUseGaussianBlurBackground) {
-                try {
-                    this.mBackground.setBackgroundColor(c.a(getApplicationContext(), C12, C12));
-                } catch (Resources.NotFoundException e2) {
-                    Log.d(LOG_TAG, "NotFoundException: " + e2.toString());
-                } catch (Exception e3) {
-                    Log.d(LOG_TAG, "Exception: " + e3.toString());
-                }
-            }
-        }
-        if (z) {
-            OppoAnimationUtils.Fade.show(this.mBackground);
+        if (this.mAppIcon == null) {
+            LogUtil.normal(LogUtil.TAG_NAVBAR, ColorSideGestureConfiguration.TAG, "onDraw, mAppIcon is null");
+        } else if (this.mGestureState == 3 || this.mAppIconProcessing) {
+            canvas.drawBitmap(this.mAppIcon, this.mAppIconMatrix, this.mIconPaint);
         }
     }
+
 
         });
     }
