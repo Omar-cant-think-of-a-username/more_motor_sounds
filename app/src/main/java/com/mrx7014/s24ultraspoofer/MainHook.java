@@ -16,7 +16,6 @@
 package com.mrx7014.s24ultraspoofer;
 
 import android.util.Log;
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -27,35 +26,45 @@ public class MainHook implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        // Check if the target package is being loaded
         if (!lpparam.packageName.equals("com.android.systemui")) {
             return;
         }
 
-        // Log that we're hooking into the target package
         XposedBridge.log("Blur Background: Hooking into: " + lpparam.packageName);
 
-        // Target class and method
         String targetClass = "com.coloros.systemui.navbar.gesture.sidegesture.ColorSideGestureNavView";
         String targetMethod = "onDraw";
-        
 
-        // Hook the method and replace its implementation with an empty body
-        XposedHelpers.findAndHookMethod(targetClass, lpparam.classLoader, targetMethod, new XC_MethodReplacement() {
-            @Override
-            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                
-        if (this.mGestureState == 2 || this.mBackIconProcessing) {
-            canvas.drawBitmap(this.mBackIcon, this.mBackIconMatrix, this.mIconPaint);
-        }
-        if (this.mAppIcon == null) {
-            LogUtil.normal(LogUtil.TAG_NAVBAR, ColorSideGestureConfiguration.TAG, "onDraw, mAppIcon is null");
-        } else if (this.mGestureState == 3 || this.mAppIconProcessing) {
-            canvas.drawBitmap(this.mAppIcon, this.mAppIconMatrix, this.mIconPaint);
-        }
-    }
+        XposedHelpers.findAndHookMethod(targetClass, lpparam.classLoader, targetMethod, 
+            android.graphics.Canvas.class, new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    Object thisObject = param.thisObject;
 
+                    int mGestureState = (int) XposedHelpers.getObjectField(thisObject, "mGestureState");
+                    boolean mBackIconProcessing = (boolean) XposedHelpers.getObjectField(thisObject, "mBackIconProcessing");
+                    Object mBackIcon = XposedHelpers.getObjectField(thisObject, "mBackIcon");
+                    Object mBackIconMatrix = XposedHelpers.getObjectField(thisObject, "mBackIconMatrix");
+                    Object mIconPaint = XposedHelpers.getObjectField(thisObject, "mIconPaint");
+                    Object canvas = param.args[0];
 
-        });
+                    if (mGestureState == 2 || mBackIconProcessing) {
+                        XposedHelpers.callMethod(canvas, "drawBitmap", mBackIcon, mBackIconMatrix, mIconPaint);
+                    }
+
+                    Object mAppIcon = XposedHelpers.getObjectField(thisObject, "mAppIcon");
+                    boolean mAppIconProcessing = (boolean) XposedHelpers.getObjectField(thisObject, "mAppIconProcessing");
+
+                    if (mAppIcon == null) {
+                        XposedBridge.log("onDraw, mAppIcon is null");
+                    } else if (mGestureState == 3 || mAppIconProcessing) {
+                        Object mAppIconMatrix = XposedHelpers.getObjectField(thisObject, "mAppIconMatrix");
+                        XposedHelpers.callMethod(canvas, "drawBitmap", mAppIcon, mAppIconMatrix, mIconPaint);
+                    }
+
+                    return null;
+                }
+            }
+        );
     }
 }
